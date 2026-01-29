@@ -3,38 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DiaryAI - Smart Diary & Notes with AI</title>
+    <title>DiaryAI - Smart Diary & Notes</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loadingScreen" class="loading-screen">
-        <div class="loading-content">
-            <div class="loading-spinner">
-                <div class="spinner"></div>
+    <!-- Loading -->
+    <div id="loading" class="loading">
+        <div class="loading-spinner">
+            <i class="fas fa-brain"></i>
+        </div>
+        <p>Loading DiaryAI...</p>
+    </div>
+
+    <!-- Main App -->
+    <div class="app-container" style="display: none;">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+                <h1>DiaryAI</h1>
             </div>
-            <h2>DiaryAI</h2>
-            <p>Loading your notes...</p>
+            
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-page="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-btn" data-page="notes">
+                    <i class="fas fa-sticky-note"></i>
+                    <span>Notes</span>
+                </button>
+                <button class="nav-btn" data-page="diary">
+                    <i class="fas fa-book"></i>
+                    <span>Diary</span>
+                </button>
+                <button class="nav-btn" data-page="insights">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Insights</span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="aiAssistantBtn" class="ai-btn">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Assistant</span>
+                </button>
+                
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name" id="userName">User</span>
+                        <span class="user-status">Online</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="globalSearch" placeholder="Search notes or ask AI...">
+                    <button id="aiSearchBtn" class="ai-search-btn">
+                        <i class="fas fa-magic"></i>
+                    </button>
+                </div>
+                
+                <div class="header-actions">
+                    <button id="newNoteBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> New Note
+                    </button>
+                    <button id="voiceInputBtn" class="btn btn-icon" title="Voice Input">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button id="settingsBtn" class="btn btn-icon" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <div class="theme-toggle">
+                        <label class="switch">
+                            <input type="checkbox" id="themeToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Pages -->
+            <div class="pages">
+                <!-- Dashboard -->
+                <div id="dashboardPage" class="page active">
+                    <div class="page-header">
+                        <h2>Welcome to DiaryAI</h2>
+                        <p id="currentDate">Loading date...</p>
+                    </div>
+                    
+                    <div class="dashboard-content">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-sticky-note"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="totalNotes">0</h3>
+                                    <p>Total Notes</p>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="totalDiary">0</h3>
+                                    <p>Diary Entries</p>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="aiRequests">0</h3>
+                                    <p>AI Requests</p>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-smile"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="avgMood">😊</h3>
+                                    <p>Average Mood</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="recent-notes">
+                            <h3><i class="fas fa-clock"></i> Recent Notes</h3>
+                            <div id="recentNotes" class="recent-notes-grid">
+                                <!-- Recent notes will be loaded here -->
+                            </div>
+                        </div>
+                        
+                        <div class="ai-suggestions">
+                            <h3><i class="fas fa-lightbulb"></i> AI Suggestions</h3>
+                            <div id="suggestionsList" class="suggestions-list">
+                                <!-- AI suggestions will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes Page -->
+                <div id="notesPage" class="page">
+                    <div class="page-header">
+                        <h2>Your Notes</h2>
+                        <div class="page-actions">
+                            <select id="noteFilter" class="select">
+                                <option value="all">All Notes</option>
+                                <option value="favorites">Favorites</option>
+                                <option value="pinned">Pinned</option>
+                                <option value="today">Today</option>
+                            </select>
+                            <button id="exportNotesBtn" class="btn btn-secondary">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="notes-content">
+                        <div id="notesGrid" class="notes-grid">
+                            <!-- Notes will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diary Page -->
+                <div id="diaryPage" class="page">
+                    <div class="page-header">
+                        <h2>Diary</h2>
+                        <button id="newDiaryBtn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> New Entry
+                        </button>
+                    </div>
+                    <div id="diaryContent">
+                        <!-- Diary content will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Insights Page -->
+                <div id="insightsPage" class="page">
+                    <div class="page-header">
+                        <h2>Insights</h2>
+                        <p>AI-powered analysis of your notes</p>
+                    </div>
+                    <div id="insightsContent">
+                        <!-- Insights will be loaded here -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo">
-            <div class="logo-icon">
-                <i class="fas fa-brain"></i>
-            </div>
-            <h1>DiaryAI</h1>
-        </div>
+    <!-- AI Assistant Modal -->
+    <div id="aiAssistantModal" class="modal">
+        <!-- Modal content will be dynamically loaded -->
+    </div>
+
+    <!-- Note Editor Modal -->
+    <div id="noteEditorModal" class="modal">
+        <!-- Modal content will be dynamically loaded -->
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <!-- Modal content will be dynamically loaded -->
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script type="module" src="src/app.js"></script>
+    
+    <script>
+        // Hide loading screen when app is ready
+        window.addEventListener('appReady', () => {
+            document.getElementById('loading').style.display = 'none';
+            document.querySelector('.app-container').style.display = 'flex';
+        });
         
-        <nav class="nav-menu">
-            <button class="nav-btn active" data-page="dashboard">
-                <i class="fas fa-home"></i>
-                <span>Dashboard</span>
-            </button>
+        // Initialize service worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered:', registration);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>            </button>
             <button class="nav-btn" data-page="notes">
                 <i class="fas fa-sticky-note"></i>
                 <span>Notes</span>
