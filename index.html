@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiaryAI - Smart Diary & Notes with AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <h2>DiaryAI</h2>
+            <p>Loading your notes...</p>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <h1>DiaryAI</h1>
+        </div>
+        
+        <nav class="nav-menu">
+            <button class="nav-btn active" data-page="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-btn" data-page="notes">
+                <i class="fas fa-sticky-note"></i>
+                <span>Notes</span>
+            </button>
+            <button class="nav-btn" data-page="diary">
+                <i class="fas fa-book"></i>
+                <span>Diary</span>
+            </button>
+            <button class="nav-btn" data-page="calendar">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Calendar</span>
+            </button>
+            <button class="nav-btn" data-page="insights">
+                <i class="fas fa-chart-bar"></i>
+                <span>Insights</span>
+            </button>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <button id="aiAssistantBtn" class="ai-assistant-btn">
+                <i class="fas fa-robot"></i>
+                <span>AI Assistant</span>
+            </button>
+            
+            <div class="user-profile">
+                <div class="profile-pic">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="profile-info">
+                    <span class="username">User</span>
+                    <span class="user-status">Online</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="globalSearch" placeholder="Search notes, diary, or ask AI...">
+                    <button id="aiSearchBtn" class="ai-search-btn">
+                        <i class="fas fa-magic"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <button id="newNoteBtn" class="btn-primary">
+                    <i class="fas fa-plus"></i> New Note
+                </button>
+                <button id="newDiaryBtn" class="btn-secondary">
+                    <i class="fas fa-pen-fancy"></i> New Diary
+                </button>
+                <button id="voiceInputBtn" class="btn-icon" title="Voice Input">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button id="settingsBtn" class="btn-icon" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <div class="theme-toggle">
+                    <label class="theme-switch">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </header>
+
+        <!-- Pages Container -->
+        <div class="pages-container">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page active">
+                <div class="dashboard-header">
+                    <h2>Welcome back! <span id="greetingName">User</span></h2>
+                    <p id="currentDateTime">Loading...</p>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <!-- Stats Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #4361ee;">
+                                <i class="fas fa-sticky-note"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="totalNotes">0</h3>
+                                <p>Total Notes</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #3a0ca3;">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="totalDiary">0</h3>
+                                <p>Diary Entries</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #4cc9f0;">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="aiRequests">0</h3>
+                                <p>AI Requests</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #f72585;">
+                                <i class="fas fa-smile"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="avgMood">😊</h3>
+                                <p>Average Mood</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Notes -->
+                    <div class="recent-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-clock"></i> Recent Notes</h3>
+                            <button id="viewAllNotes" class="btn-text">View All</button>
+                        </div>
+                        <div id="recentNotes" class="recent-grid">
+                            <!-- Notes will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- AI Suggestions -->
+                    <div class="ai-suggestions">
+                        <div class="section-header">
+                            <h3><i class="fas fa-lightbulb"></i> AI Suggestions</h3>
+                            <button id="refreshSuggestions" class="btn-icon">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div id="suggestionsList" class="suggestions-list">
+                            <div class="suggestion-item">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <span>Loading suggestions...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Page -->
+            <div id="notesPage" class="page">
+                <div class="page-header">
+                    <h2><i class="fas fa-sticky-note"></i> Sticky Notes</h2>
+                    <div class="page-actions">
+                        <div class="filter-notes">
+                            <select id="noteFilter">
+                                <option value="all">All Notes</option>
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="favorites">Favorites</option>
+                            </select>
+                        </div>
+                        <button id="exportNotesBtn" class="btn-secondary">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="notes-container">
+                    <div class="notes-grid" id="notesGrid">
+                        <!-- Notes will be loaded here -->
+                    </div>
+                    
+                    <div class="empty-state" id="emptyNotesState">
+                        <div class="empty-icon">
+                            <i class="fas fa-sticky-note"></i>
+                        </div>
+                        <h3>No Notes Yet</h3>
+                        <p>Create your first sticky note to get started!</p>
+                        <button id="createFirstNote" class="btn-primary">
+                            <i class="fas fa-plus"></i> Create Note
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diary Page -->
+            <div id="diaryPage" class="page">
+                <iframe src="pages/diary.html" frameborder="0" id="diaryFrame"></iframe>
+            </div>
+
+            <!-- Calendar Page -->
+            <div id="calendarPage" class="page">
+                <iframe src="pages/calendar.html" frameborder="0" id="calendarFrame"></iframe>
+            </div>
+
+            <!-- Insights Page -->
+            <div id="insightsPage" class="page">
+                <div class="insights-container">
+                    <div class="insights-header">
+                        <h2><i class="fas fa-chart-line"></i> AI Insights</h2>
+                        <p>Analytics and patterns from your notes & diary</p>
+                    </div>
+                    
+                    <div class="insights-grid">
+                        <div class="insight-card large">
+                            <h3><i class="fas fa-smile"></i> Mood Analysis</h3>
+                            <div class="mood-chart" id="moodChart">
+                                <canvas id="moodChartCanvas"></canvas>
+                            </div>
+                            <div class="mood-summary" id="moodSummary">
+                                Loading mood analysis...
+                            </div>
+                        </div>
+                        
+                        <div class="insight-card">
+                            <h3><i class="fas fa-tags"></i> Top Topics</h3>
+                            <div id="topicsContainer" class="topics-container">
+                                <div class="loading-topics">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span>Analyzing topics...</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="insight-card">
+                            <h3><i class="fas fa-calendar"></i> Writing Frequency</h3>
+                            <div class="frequency-chart" id="frequencyChart">
+                                <canvas id="frequencyChartCanvas"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="insight-card">
+                            <h3><i class="fas fa-chart-pie"></i> Content Distribution</h3>
+                            <div class="distribution-chart" id="distributionChart">
+                                <canvas id="distributionChartCanvas"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="insight-card large">
+                            <h3><i class="fas fa-robot"></i> AI Recommendations</h3>
+                            <div id="aiRecommendations" class="recommendations-list">
+                                <div class="recommendation-item">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span>Generating recommendations...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assistant Modal -->
+    <div id="aiAssistantModal" class="modal">
+        <div class="modal-content ai-modal">
+            <div class="ai-modal-header">
+                <div class="ai-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="ai-header-info">
+                    <h3>DiaryAI Assistant</h3>
+                    <p class="ai-status">
+                        <span class="status-indicator connected"></span>
+                        <span id="aiStatusText">Ready to help</span>
+                    </p>
+                </div>
+                <button class="close-modal">&times;</button>
+            </div>
+            
+            <div class="ai-conversation" id="aiConversation">
+                <div class="ai-message">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>Hello! I'm your AI assistant. I can help you analyze your notes, suggest writing topics, summarize text, and more. How can I assist you today?</p>
+                        <span class="message-time">Just now</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="ai-input-container">
+                <div class="quick-actions">
+                    <button class="quick-action" data-action="analyzeMood">
+                        <i class="fas fa-smile"></i> Analyze Mood
+                    </button>
+                    <button class="quick-action" data-action="summarize">
+                        <i class="fas fa-file-contract"></i> Summarize
+                    </button>
+                    <button class="quick-action" data-action="suggestTopic">
+                        <i class="fas fa-lightbulb"></i> Suggest Topic
+                    </button>
+                    <button class="quick-action" data-action="improveWriting">
+                        <i class="fas fa-edit"></i> Improve Writing
+                    </button>
+                </div>
+                
+                <div class="input-group">
+                    <textarea 
+                        id="aiMessageInput" 
+                        placeholder="Type your message or question for AI..."
+                        rows="3"
+                    ></textarea>
+                    <button id="sendAIMessage" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <div class="input-footer">
+                    <div class="api-info">
+                        <span class="api-status" id="currentApiStatus">
+                            <i class="fas fa-plug"></i> Hugging Face API
+                        </span>
+                    </div>
+                    <div class="model-info">
+                        Using: <span id="currentModel">Sentiment Analysis</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Note Editor Modal -->
+    <div id="noteEditorModal" class="modal">
+        <div class="modal-content note-editor">
+            <div class="editor-header">
+                <h3>Edit Note</h3>
+                <div class="editor-actions">
+                    <button class="btn-icon" id="analyzeNoteBtn" title="Analyze with AI">
+                        <i class="fas fa-robot"></i>
+                    </button>
+                    <button class="btn-icon" id="favoriteNoteBtn" title="Favorite">
+                        <i class="far fa-star"></i>
+                    </button>
+                    <button class="close-modal">&times;</button>
+                </div>
+            </div>
+            
+            <div class="editor-body">
+                <div class="color-picker">
+                    <span>Color:</span>
+                    <div class="color-options">
+                        <div class="color-option selected" data-color="#ffeb3b" style="background-color: #ffeb3b;"></div>
+                        <div class="color-option" data-color="#a5d6a7" style="background-color: #a5d6a7;"></div>
+                        <div class="color-option" data-color="#90caf9" style="background-color: #90caf9;"></div>
+                        <div class="color-option" data-color="#f48fb1" style="background-color: #f48fb1;"></div>
+                        <div class="color-option" data-color="#ce93d8" style="background-color: #ce93d8;"></div>
+                        <div class="color-option" data-color="#ffffff" style="background-color: #ffffff; border: 1px solid #ddd;"></div>
+                    </div>
+                </div>
+                
+                <div class="editor-content">
+                    <textarea 
+                        id="noteEditorText" 
+                        placeholder="Write your note here..."
+                        rows="10"
+                    ></textarea>
+                    
+                    <div class="ai-suggestions-editor" id="aiNoteSuggestions">
+                        <!-- AI suggestions will appear here -->
+                    </div>
+                </div>
+                
+                <div class="editor-footer">
+                    <div class="mood-indicator" id="noteMoodIndicator">
+                        <span class="mood-label">Mood:</span>
+                        <span class="mood-value" id="currentMood">Neutral</span>
+                        <div class="mood-emoji" id="moodEmoji">😐</div>
+                    </div>
+                    
+                    <div class="editor-buttons">
+                        <button id="cancelNoteBtn" class="btn-secondary">Cancel</button>
+                        <button id="saveNoteBtn" class="btn-primary">Save Note</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content settings-modal">
+            <div class="settings-header">
+                <h2><i class="fas fa-cogs"></i> Settings</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            
+            <div class="settings-tabs">
+                <button class="tab-btn active" data-tab="general">General</button>
+                <button class="tab-btn" data-tab="ai">AI Settings</button>
+                <button class="tab-btn" data-tab="backup">Backup & Export</button>
+                <button class="tab-btn" data-tab="about">About</button>
+            </div>
+            
+            <div class="settings-content">
+                <!-- General Tab -->
+                <div id="generalTab" class="tab-content active">
+                    <div class="setting-item">
+                        <label for="userName">Your Name</label>
+                        <input type="text" id="userName" placeholder="Enter your name">
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label for="autoSave">Auto-save Interval</label>
+                        <select id="autoSave">
+                            <option value="5000">5 seconds</option>
+                            <option value="10000" selected>10 seconds</option>
+                            <option value="30000">30 seconds</option>
+                            <option value="60000">1 minute</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label>Default Note Color</label>
+                        <div class="color-options">
+                            <div class="color-option" data-color="#ffeb3b" style="background-color: #ffeb3b;"></div>
+                            <div class="color-option" data-color="#a5d6a7" style="background-color: #a5d6a7;"></div>
+                            <div class="color-option" data-color="#90caf9" style="background-color: #90caf9;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Settings Tab -->
+                <div id="aiTab" class="tab-content">
+                    <div class="setting-item">
+                        <label for="aiProvider">AI Provider</label>
+                        <select id="aiProvider">
+                            <option value="huggingface" selected>Hugging Face</option>
+                            <option value="simulated">Simulated AI (Offline)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label for="hfApiKey">Hugging Face Token</label>
+                        <div class="input-with-button">
+                            <input type="password" id="hfApiKey" placeholder="Enter your Hugging Face token">
+                            <button id="testApiBtn" class="btn-secondary">Test</button>
+                        </div>
+                        <p class="setting-description">
+                            Get a free token from 
+                            <a href="https://huggingface.co/settings/tokens" target="_blank">
+                                Hugging Face Settings
+                            </a>
+                        </p>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label>AI Features</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox">
+                                <input type="checkbox" id="enableMoodAnalysis" checked>
+                                <span>Auto mood analysis</span>
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" id="enableAISuggestions" checked>
+                                <span>AI writing suggestions</span>
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" id="enableAutoTags">
+                                <span>Auto-tagging</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button id="openApiSettings" class="btn-secondary">
+                        <i class="fas fa-external-link-alt"></i> Open Advanced API Settings
+                    </button>
+                </div>
+                
+                <!-- Backup Tab -->
+                <div id="backupTab" class="tab-content">
+                    <div class="backup-actions">
+                        <button id="exportAllBtn" class="btn-primary">
+                            <i class="fas fa-download"></i> Export All Data
+                        </button>
+                        <button id="importDataBtn" class="btn-secondary">
+                            <i class="fas fa-upload"></i> Import Data
+                        </button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                    </div>
+                    
+                    <div class="backup-info">
+                        <h4>Backup Information</h4>
+                        <p>Your data is stored locally in your browser. Export regularly to backup your notes and diary entries.</p>
+                        
+                        <div class="data-stats">
+                            <div class="data-stat">
+                                <span class="stat-label">Notes:</span>
+                                <span class="stat-value" id="backupNotesCount">0</span>
+                            </div>
+                            <div class="data-stat">
+                                <span class="stat-label">Diary Entries:</span>
+                                <span class="stat-value" id="backupDiaryCount">0</span>
+                            </div>
+                            <div class="data-stat">
+                                <span class="stat-label">Total Size:</span>
+                                <span class="stat-value" id="backupSize">0 KB</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- About Tab -->
+                <div id="aboutTab" class="tab-content">
+                    <div class="about-content">
+                        <div class="app-logo">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>DiaryAI v1.0</h3>
+                        <p>A smart diary and notes app</p>
+                        
+                        <div class="about-info">
+                            <p><strong>Features:</strong></p>
+                            <ul>
+                                <li>Smart sticky notes with drag & drop</li>
+                                <li>Rich text diary entries</li>
+                                <li>Mood analysis and insights</li>
+                                <li>Calendar view and statistics</li>
+                                <li>PWA - Works offline</li>
+                            </ul>
+                            
+                            <p><strong>Technologies:</strong></p>
+                            <p>HTML5, CSS3, JavaScript, Hugging Face API, LocalStorage</p>
+                            
+                            <p><strong>Created by:</strong> DiaryAI Team</p>
+                            <p><strong>License:</strong> MIT Open Source</p>
+                        </div>
+                        
+                        <div class="about-links">
+                            <a href="#" class="link"><i class="fas fa-question-circle"></i> Help</a>
+                            <a href="#" class="link"><i class="fas fa-bug"></i> Report Bug</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-footer">
+                <button id="saveSettingsBtn" class="btn-primary">Save Settings</button>
+                <button id="resetSettingsBtn" class="btn-secondary">Reset to Default</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="ai-service.js"></script>
+    <script src="app.js"></script>
+    
+    <script>
+        // Initialize service worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(() => console.log('Service Worker Registered'))
+                .catch(err => console.log('Service Worker Error:', err));
+        }
+    </script>
+</body>
+</html>
