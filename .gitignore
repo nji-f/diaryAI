@@ -1,0 +1,12 @@
+# API Keys
+.env.local
+.env
+
+# Node modules
+node_modules/
+
+# Environment variables
+.env*.local
+
+# Vercel
+.vercel
