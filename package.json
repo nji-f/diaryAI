@@ -1,0 +1,17 @@
+{
+  "name": "diary-ai",
+  "version": "1.0.0",
+  "description": "AI Diary Web App",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "serve ."
+  },
+  "dependencies": {
+    "openai": "^4.20.0"
+  },
+  "devDependencies": {
+    "vercel": "^28.0.0",
+    "serve": "^14.0.0"
+  }
+}
