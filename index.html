@@ -3,38 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DiaryAI - Smart Diary & Notes</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Diary AI - Buku Harian Pintar</title>
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Loading -->
-    <div id="loading" class="loading">
-        <div class="loading-spinner">
-            <i class="fas fa-brain"></i>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-book-open"></i>
+                <h1>Diary AI</h1>
+            </div>
+            <div class="theme-toggle">
+                <button id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="user-info">
+                    <div class="avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h3>Hai, Pengguna!</h3>
+                    <p class="date" id="currentDate"></p>
+                </div>
+
+                <nav class="nav-menu">
+                    <button class="nav-btn active" data-page="write">
+                        <i class="fas fa-pen"></i> Tulis Diary
+                    </button>
+                    <button class="nav-btn" data-page="entries">
+                        <i class="fas fa-history"></i> Riwayat
+                    </button>
+                    <button class="nav-btn" data-page="insights">
+                        <i class="fas fa-chart-line"></i> Insight AI
+                    </button>
+                    <button class="nav-btn" data-page="settings">
+                        <i class="fas fa-cog"></i> Pengaturan
+                    </button>
+                </nav>
+
+                <div class="stats">
+                    <h4>Statistik</h4>
+                    <div class="stat-item">
+                        <span>Total Entri</span>
+                        <span id="totalEntries">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Kata Tertulis</span>
+                        <span id="totalWords">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Mood Rata-rata</span>
+                        <span id="avgMood">😊</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Area -->
+            <div class="content-area">
+                <!-- Write Page -->
+                <div class="page active" id="writePage">
+                    <div class="page-header">
+                        <h2><i class="fas fa-pen-fancy"></i> Tulis Diary Hari Ini</h2>
+                        <div class="mood-selector">
+                            <span>Mood:</span>
+                            <div class="mood-options">
+                                <button class="mood-btn" data-mood="sangat-baik">😄</button>
+                                <button class="mood-btn" data-mood="baik">😊</button>
+                                <button class="mood-btn" data-mood="biasa">😐</button>
+                                <button class="mood-btn" data-mood="kurang">😔</button>
+                                <button class="mood-btn" data-mood="buruk">😢</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="editor-container">
+                        <div class="editor-header">
+                            <input type="text" id="diaryTitle" placeholder="Judul diary hari ini...">
+                            <div class="editor-tools">
+                                <button class="tool-btn" data-tool="bold"><i class="fas fa-bold"></i></button>
+                                <button class="tool-btn" data-tool="italic"><i class="fas fa-italic"></i></button>
+                                <button class="tool-btn" data-tool="list"><i class="fas fa-list"></i></button>
+                            </div>
+                        </div>
+                        
+                        <textarea id="diaryContent" placeholder="Ceritakan harimu di sini... Apa yang membuatmu senang? Apa tantangan yang kamu hadapi? Tuliskan dengan bebas!"></textarea>
+                        
+                        <div class="editor-footer">
+                            <div class="word-count">
+                                <span id="wordCount">0</span> kata
+                            </div>
+                            <div class="editor-actions">
+                                <button class="btn secondary" id="aiSuggestBtn">
+                                    <i class="fas fa-lightbulb"></i> Saran AI
+                                </button>
+                                <button class="btn primary" id="saveBtn">
+                                    <i class="fas fa-save"></i> Simpan Diary
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ai-suggestions hidden" id="aiSuggestions">
+                        <h3><i class="fas fa-robot"></i> Saran dari AI</h3>
+                        <div class="suggestion-content" id="suggestionContent">
+                            <!-- AI suggestions will appear here -->
+                        </div>
+                        <button class="btn small" id="applySuggestion">
+                            <i class="fas fa-magic"></i> Terapkan Saran
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Entries Page -->
+                <div class="page" id="entriesPage">
+                    <div class="page-header">
+                        <h2><i class="fas fa-history"></i> Riwayat Diary</h2>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchEntries" placeholder="Cari diary...">
+                        </div>
+                    </div>
+
+                    <div class="entries-list" id="entriesList">
+                        <!-- Entries will be loaded here -->
+                        <div class="empty-state">
+                            <i class="fas fa-book"></i>
+                            <p>Belum ada diary yang disimpan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insights Page -->
+                <div class="page" id="insightsPage">
+                    <div class="page-header">
+                        <h2><i class="fas fa-chart-line"></i> Insight dari AI</h2>
+                        <button class="btn secondary" id="refreshInsights">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="insights-container">
+                        <div class="insight-card">
+                            <div class="insight-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <h3>Analisis Mood</h3>
+                            <p id="moodAnalysis">AI akan menganalisis pola mood kamu...</p>
+                        </div>
+
+                        <div class="insight-card">
+                            <div class="insight-icon">
+                                <i class="fas fa-trend-up"></i>
+                            </div>
+                            <h3>Pola Menulis</h3>
+                            <p id="writingPattern">Menemukan pola dari kebiasaan menulismu...</p>
+                        </div>
+
+                        <div class="insight-card">
+                            <div class="insight-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <h3>Rekomendasi</h3>
+                            <p id="aiRecommendation">AI akan memberikan rekomendasi personal...</p>
+                        </div>
+
+                        <div class="insight-card">
+                            <div class="insight-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <h3>Peringatan</h3>
+                            <p id="aiReminder">Jangan lupa menulis diary hari ini! ✨</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div class="page" id="settingsPage">
+                    <div class="page-header">
+                        <h2><i class="fas fa-cog"></i> Pengaturan</h2>
+                    </div>
+
+                    <div class="settings-container">
+                        <div class="setting-item">
+                            <h3><i class="fas fa-robot"></i> Konfigurasi AI</h3>
+                            <p>Atur preferensi AI untuk diary kamu</p>
+                            <div class="setting-controls">
+                                <label>
+                                    <input type="checkbox" id="enableAI" checked>
+                                    Aktifkan Saran AI
+                                </label>
+                                <label>
+                                    Tone AI:
+                                    <select id="aiTone">
+                                        <option value="friendly">Ramah & Supportif</option>
+                                        <option value="professional">Profesional</option>
+                                        <option value="casual">Santai</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <h3><i class="fas fa-bell"></i> Notifikasi</h3>
+                            <p>Atur pengingat menulis diary</p>
+                            <div class="setting-controls">
+                                <label>
+                                    <input type="checkbox" id="dailyReminder" checked>
+                                    Pengingat Harian
+                                </label>
+                                <label>
+                                    Waktu Pengingat:
+                                    <input type="time" id="reminderTime" value="20:00">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <h3><i class="fas fa-database"></i> Data</h3>
+                            <p>Kelola data diary kamu</p>
+                            <div class="setting-controls">
+                                <button class="btn secondary" id="exportData">
+                                    <i class="fas fa-download"></i> Ekspor Data
+                                </button>
+                                <button class="btn danger" id="clearData">
+                                    <i class="fas fa-trash"></i> Hapus Semua Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay hidden" id="loadingOverlay">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p>AI sedang berpikir...</p>
+            </div>
         </div>
-        <p>Loading DiaryAI...</p>
+
+        <!-- Toast Notification -->
+        <div class="toast hidden" id="toast"></div>
     </div>
 
-    <!-- Main App -->
-    <div class="app-container" style="display: none;">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="logo">
-                <i class="fas fa-brain"></i>
-                <h1>DiaryAI</h1>
-            </div>
-            
-            <nav class="nav-menu">
-                <button class="nav-btn active" data-page="dashboard">
-                    <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
-                </button>
-                <button class="nav-btn" data-page="notes">
-                    <i class="fas fa-sticky-note"></i>
-                    <span>Notes</span>
+    <script src="/js/app.js"></script>
+</body>
+</html>                    <span>Notes</span>
                 </button>
                 <button class="nav-btn" data-page="diary">
                     <i class="fas fa-book"></i>
